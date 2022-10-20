@@ -58,9 +58,15 @@ dishRouter
       .exec()
       .then(
         (dish) => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json(dish);
+          if (dish != null) {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(dish);
+          } else {
+            err = new Error("Dish " + req.params.dishId + " not found");
+            err.statusCode = 404;
+            return next(err);
+          }
         },
         (err) => next(err)
       )
@@ -80,9 +86,15 @@ dishRouter
     )
       .then(
         (dish) => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json(dish);
+          if (dish != null) {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(dish);
+          } else {
+            err = new Error("Dish " + req.params.dishId + " not found");
+            err.statusCode = 404;
+            return next(err);
+          }
         },
         (err) => next(err)
       )
@@ -93,9 +105,15 @@ dishRouter
     Dishes.findByIdAndDelete(req.params.dishId)
       .then(
         (dish) => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json(dish);
+          if (dish != null) {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            res.json(dish);
+          } else {
+            err = new Error("Dish " + req.params.dishId + " not found");
+            err.statusCode = 404;
+            return next(err);
+          }
         },
         (err) => next(err)
       )
@@ -248,7 +266,6 @@ dishRouter
       )
       .catch((err) => next(err));
   })
-
   .delete((req, res, next) => {
     Dishes.findById(req.params.dishId)
       .exec()
