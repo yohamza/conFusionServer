@@ -7,118 +7,108 @@ const leaderRouter = express.Router();
 
 leaderRouter
   .route("/")
-  .get((req, res, next) => {
-    Leaders.find({})
-      .then(
-        (leaders) => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json(leaders);
-        },
-        (err) => next(err)
-      )
-      .catch((err) => next(err));
+  .get(async (req, res, next) => {
+    try {
+      let leaders = await Leaders.find({});
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "application/json");
+      res.json(leaders);
+
+    } catch (error) {
+      next(error);
+    }
   })
-  .post((req, res, next) => {
-    Leaders.create(req.body)
-      .then(
-        (leader) => {
-          if (leader != null) {
-            res.statusCode = 201;
-            res.setHeader("Content-Type", "application/json");
-            res.json(leader);
-          } else {
-            err = new Error("Leader " + req.params.leaderId + " not found");
-            err.statusCode = 404;
-            return next(err);
-          }
-        },
-        (err) => next(err)
-      )
-      .catch((err) => next(err));
+  .post(async (req, res, next) => {
+
+    try {
+      let leader = await Leaders.create(req.body);
+
+      res.statusCode = 201;
+      res.setHeader("Content-Type", "application/json");
+      res.json(leader);
+
+    } catch (error) {
+      next(error);
+    }
   })
   .put((req, res, next) => {
     res.statusCode = 403;
     res.end("PUT operation not supported on /leaders");
   })
-  .delete((req, res, next) => {
-    Leaders.deleteMany({})
-      .then(
-        () => {
-          res.statusCode = 200;
-          res.setHeader("Content-Type", "application/json");
-          res.json("All leaders deleted succesfully");
-        },
-        (err) => next(err)
-      )
-      .catch((err) => next(err));
+  .delete(async (req, res, next) => {
+
+    try {
+      let result = await Leaders.deleteMany({});
+      res.statusCode = 200;
+      res.setHeader("Content-Type", "application/json");
+      res.json("All leaders deleted succesfully");
+    } catch (error) {
+      next(error);
+    }
+
   });
 
 leaderRouter
   .route("/:leaderId")
-  .get((req, res, next) => {
-    Leaders.findById(req.params.leaderId)
-      .then(
-        (leader) => {
-          if (leader != null) {
-            res.statusCode = 200;
-            res.setHeader("Content-Type", "application/json");
-            res.json(leader);
-          } else {
-            err = new Error("Leader " + req.params.leaderId + " not found");
-            err.statusCode = 404;
-            return next(err);
-          }
-        },
-        (err) => next(err)
-      )
-      .catch((err) => next(err));
+  .get(async (req, res, next) => {
+
+    try {
+      let leader = await Leaders.findById(req.params.leaderId);
+
+      if (leader != null) {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(leader);
+      } else {
+        error = new Error("Leader " + req.params.leaderId + " not found");
+        error.statusCode = 404;
+        return next(error);
+      }
+
+    } catch (error) {
+      next(error);
+    }
   })
   .post((req, res, next) => {
     res.statusCode = 403;
     res.end("POST operation not supported on /leaders/" + req.params.leaderId);
   })
-  .put((req, res, next) => {
-    Leaders.findByIdAndUpdate(
-      req.params.leaderId,
-      {
-        $set: req.body,
-      },
-      { new: true }
-    )
-      .then(
-        (leader) => {
-          if (leader != null) {
-            res.statusCode = 200;
-            res.setHeader("Content-Type", "application/json");
-            res.json(leader);
-          } else {
-            err = new Error("Leader " + req.params.leaderId + " not found");
-            err.statusCode = 404;
-            return next(err);
-          }
-        },
-        (err) => next(err)
-      )
-      .catch((err) => next(err));
+  .put(async (req, res, next) => {
+
+    try {
+      let leader = await Leaders.findByIdAndUpdate(req.params.leaderId, { $set: req.body }, { new: true });
+
+      if (leader != null) {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json(leader);
+      } else {
+        error = new Error("Leader " + req.params.leaderId + " not found");
+        error.statusCode = 404;
+        return next(error);
+      }
+    } catch (error) {
+      next(error);
+    }
   })
-  .delete((req, res, next) => {
-    Leaders.findByIdAndDelete(req.params.leaderId)
-      .then(
-        (leader) => {
-          if (leader != null) {
-            res.statusCode = 200;
-            res.setHeader("Content-Type", "application/json");
-            res.json("Leader " + req.params.leaderId + " deleted succesfully");
-          } else {
-            err = new Error("Leader " + req.params.leaderId + " not found");
-            err.statusCode = 404;
-            return next(err);
-          }
-        },
-        (err) => next(err)
-      )
-      .catch((err) => next(err));
+  .delete(async (req, res, next) => {
+
+    try {
+      let result = Leaders.findByIdAndDelete(req.params.leaderId);
+
+      if (result != null) {
+        res.statusCode = 200;
+        res.setHeader("Content-Type", "application/json");
+        res.json("Leader " + req.params.leaderId + " deleted succesfully");
+      } else {
+        error = new Error("Leader " + req.params.leaderId + " not found");
+        error.statusCode = 404;
+        return next(error);
+      }
+
+    } catch (error) {
+      next(error);
+    }
   });
 
 module.exports = leaderRouter;

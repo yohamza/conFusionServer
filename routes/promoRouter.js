@@ -12,8 +12,8 @@ promoRouter
       res.statusCode = 200;
       res.setHeader("Content-Type", "application/json");
       res.json(promotions);
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   })
   .post(async (req, res, next) => {
@@ -22,8 +22,8 @@ promoRouter
       res.statusCode = 201;
       res.setHeader("Content-Type", "application/json");
       res.json(promotion);
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   })
   .put((req, res, next) => {
@@ -36,8 +36,8 @@ promoRouter
       res.statusCode = 200;
       res.setHeader("Content-Type", "application/json");
       res.json("All promotions have been deleted succesfully");
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   });
 
@@ -51,12 +51,12 @@ promoRouter
         res.setHeader("Content-Type", "application/json");
         res.json(promotion);
       } else {
-        err = new Error("Promotion " + req.params.promoId + " not found");
-        err.statusCode = 404;
-        return next(err);
+        error = new Error("Promotion " + req.params.promoId + " not found");
+        error.statusCode = 404;
+        return next(error);
       }
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   })
   .post((req, res, next) => {
@@ -78,12 +78,12 @@ promoRouter
         res.setHeader("Content-Type", "application/json");
         res.json(promotion);
       } else {
-        err = new Error("Promotion " + req.params.promoId + " not found");
-        err.statusCode = 404;
-        return next(err);
+        error = new Error("Promotion " + req.params.promoId + " not found");
+        error.statusCode = 404;
+        return next(error);
       }
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   })
   .delete(async (req, res, next) => {
@@ -94,12 +94,12 @@ promoRouter
         res.setHeader("Content-Type", "application/json");
         res.json("Promotion " + req.params.promoId + " deleted succesfully");
       } else {
-        err = new Error("Promotion " + req.params.promoId + " not found");
-        err.statusCode = 404;
-        return next(err);
+        error = new Error("Promotion " + req.params.promoId + " not found");
+        error.statusCode = 404;
+        return next(error);
       }
-    } catch (err) {
-      next(err);
+    } catch (error) {
+      next(error);
     }
   });
 
