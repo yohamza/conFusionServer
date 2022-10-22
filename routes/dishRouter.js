@@ -137,7 +137,6 @@ dishRouter
         dish.comments.push(req.body);
 
         let dishSave = await dish.save();
-        saveResult.catch((error) => next(error));
         res.statusCode = 201;
         res.setHeader("Content-Type", "application/json");
         res.json(dishSave);
@@ -168,7 +167,6 @@ dishRouter
         }
 
         let saveResult = await dish.save();
-        saveResult.catch((error) => next(error));
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
         res.json(saveResult);
@@ -231,7 +229,6 @@ dishRouter
         }
 
         let saveResult = await dish.save();
-        saveResult.catch((error) => next(error));
 
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
@@ -263,8 +260,6 @@ dishRouter
         dish.comments.id(req.params.commentId).remove();
 
         let saveResult = await dish.save();
-
-        saveResult.catch((error) => next(error));
         res.statusCode = 200;
         res.setHeader("Content-Type", "application/json");
         res.json("Comment deleted succesfully");
