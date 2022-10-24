@@ -3,14 +3,17 @@ var express = require("express");
 var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
-var session = require('express-session');
-var FileStore = require('session-file-store')(session);
+var session = require("express-session");
+var FileStore = require("session-file-store")(session);
 
 var indexRouter = require("./routes/index");
 var usersRouter = require("./routes/users");
 var dishRouter = require("./routes/dishRouter");
 var promoRouter = require("./routes/promoRouter");
 var leaderRouter = require("./routes/leaderRouter");
+
+var authenticate = require("./authenticate");
+var passport = require("passport");
 
 const mongoose = require("mongoose");
 const Dishes = require("./models/dishes");
@@ -38,39 +41,33 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // app.use(cookieParser('12345-67890-09876-54321'));
 
-app.use(session({
-  name: 'session-id',
-  secret: '12345-67890-09876-54321',
-  saveUninitialized: false,
-  resave: false,
-  store: new FileStore()
-}));
+app.use(
+  session({
+    name: "session-id",
+    secret: "12345-67890-09876-54321",
+    saveUninitialized: false,
+    resave: false,
+    store: new FileStore(),
+  })
+);
+
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use("/", indexRouter);
 app.use("/users", usersRouter);
 
 function auth(req, res, next) {
-
-  console.log(req.session);
-
-  if (!req.session.user) {
-    var error = new Error('You\'re not authenticated. Please login to continue.');
-    error.status = 401;
+  if (!req.user) {
+    var error = new Error(
+      "You're not authenticated. Please login to continue."
+    );
+    error.status = 403;
     next(error);
     return;
+  } else {
+    next();
   }
-  else {
-    if (req.session.user === 'authenticated') {
-      next();
-    }
-    else {
-      var error = new Error('You\'re not authenticated. Please login to continue.');
-      error.status = 401;
-      next(error);
-      return;
-    }
-  }
-
 }
 
 app.use(auth);
