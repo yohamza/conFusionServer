@@ -1,6 +1,6 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-require("mongoose-currency").loadType(mongoose);
+require('mongoose-currency').loadType(mongoose);
 const Currency = mongoose.Types.Currency;
 
 const commenSchema = new Schema(
@@ -43,7 +43,7 @@ const dishSchema = new Schema(
     },
     label: {
       type: String,
-      default: "",
+      default: '',
     },
     featured: {
       type: Boolean,
@@ -60,6 +60,6 @@ const dishSchema = new Schema(
   }
 );
 
-var dishModel = mongoose.model("Dish", dishSchema);
+var dishModel = mongoose.model('Dish', dishSchema);
 
 module.exports = dishModel;

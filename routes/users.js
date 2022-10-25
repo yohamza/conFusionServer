@@ -1,24 +1,25 @@
-const express = require("express");
-const bodyParser = require("body-parser");
+const express = require('express');
+const bodyParser = require('body-parser');
 const router = express.Router();
-const User = require("../models/users");
-const passport = require("passport");
+const User = require('../models/users');
+const passport = require('passport');
+const authenticate = require('../authenticate');
 
 router.use(bodyParser.json());
 
 /* GET users listing. */
-router.get("/", function (req, res, next) {
-  res.send("respond with a resource");
+router.get('/', function (req, res, next) {
+  res.send('respond with a resource');
 });
 
-router.post("/signup", async (req, res, next) => {
+router.post('/signup', async (req, res, next) => {
   try {
     console.log(
-      "username: " + req.body.username + "\npassword: " + req.body.password
+      'username: ' + req.body.username + '\npassword: ' + req.body.password
     );
     let user = await User.findOne({ username: req.body.username });
     if (user != null) {
-      var error = new Error("User" + req.body.username + " already exists");
+      var error = new Error('User' + req.body.username + ' already exists');
       error.status = 403;
       next(error);
     } else {
@@ -40,13 +41,13 @@ router.post("/signup", async (req, res, next) => {
         (error, user) => {
           if (error) {
             res.statusCode = 500;
-            res.setHeader("Content-Type", "application/json");
+            res.setHeader('Content-Type', 'application/json');
             res.json({ error: error });
           } else {
-            passport.authenticate("local")(req, res, () => {
+            passport.authenticate('local')(req, res, () => {
               res.status = 201;
-              res.setHeader("Content-Type", "application/json");
-              res.json({ success: true, message: "User created succesfully" });
+              res.setHeader('Content-Type', 'application/json');
+              res.json({ success: true, message: 'User created succesfully' });
             });
           }
         }
@@ -57,28 +58,29 @@ router.post("/signup", async (req, res, next) => {
   }
 });
 
-router.post("/login", passport.authenticate("local"), (req, res) => {
+router.post('/login', passport.authenticate('local'), (req, res) => {
+  var token = authenticate.generateToken({ _id: req.user._id });
   res.status = 200;
-  res.setHeader("Content-Type", "application/json");
-  res.json({ success: true, message: "Logged In succesfully" });
+  res.setHeader('Content-Type', 'application/json');
+  res.json({ success: true, jwt: token, message: 'Logged In succesfully' });
 });
 
-router.get("/logout", async (req, res, next) => {
+router.get('/logout', async (req, res, next) => {
   try {
     let user = await User.findOne({ username: req.body.username });
 
     if (user != null) {
       if (req.session) {
         req.session.destroy;
-        res.clearCookie("session-id");
-        res.redirect("/");
+        res.clearCookie('session-id');
+        res.redirect('/');
       } else {
-        var error = new Error("User " + req.body.username + " doesn't exist.");
+        var error = new Error('User ' + req.body.username + " doesn't exist.");
         error.statusCode = 401;
         next(error);
       }
     } else {
-      var error = new Error("User " + req.body.username + " doesn't exist.");
+      var error = new Error('User ' + req.body.username + " doesn't exist.");
       error.statusCode = 401;
       next(error);
     }
