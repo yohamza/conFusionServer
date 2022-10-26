@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const router = express.Router();
-const User = require('../models/users');
+const User = require('../models/user');
 const passport = require('passport');
 const authenticate = require('../authenticate');
 
@@ -38,17 +38,27 @@ router.post('/signup', async (req, res, next) => {
       User.register(
         new User({ username: req.body.username }),
         req.body.password,
-        (error, user) => {
+        async (error, user) => {
           if (error) {
             res.statusCode = 500;
             res.setHeader('Content-Type', 'application/json');
             res.json({ error: error });
           } else {
-            passport.authenticate('local')(req, res, () => {
-              res.status = 201;
-              res.setHeader('Content-Type', 'application/json');
-              res.json({ success: true, message: 'User created succesfully' });
-            });
+
+            if (req.body.firstname)
+              user.firstname = req.body.firstname;
+
+            if (req.body.lastname)
+              user.lastname = req.body.lastname;
+
+            let userSave = await user.save();
+            if (userSave) {
+              passport.authenticate('local')(req, res, () => {
+                res.status = 201;
+                res.setHeader('Content-Type', 'application/json');
+                res.json({ success: true, message: 'User created succesfully' });
+              });
+            }
           }
         }
       );

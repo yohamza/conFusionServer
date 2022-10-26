@@ -12,7 +12,7 @@ dishRouter
   .route('/')
   .get(async (req, res, next) => {
     try {
-      let dishes = await Dishes.find({});
+      let dishes = await Dishes.find({}).populate('comments.author');
       res.statusCode = 200;
       res.setHeader('Content-Type', 'application/json');
       res.json(dishes);
@@ -49,7 +49,7 @@ dishRouter
   .route('/:dishId')
   .get(async (req, res, next) => {
     try {
-      let dish = Dishes.findById(req.params.dishId);
+      let dish = Dishes.findById(req.params.dishId).populate('comments.author');
       if (dish != null) {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
@@ -109,7 +109,7 @@ dishRouter
   .route('/:dishId/comments')
   .get(async (req, res, next) => {
     try {
-      let dish = await Dishes.findById(req.params.dishId);
+      let dish = await Dishes.findById(req.params.dishId).populate('comments.author');
       if (dish != null) {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
@@ -127,12 +127,21 @@ dishRouter
     try {
       let dish = await Dishes.findById(req.params.dishId);
       if (dish != null) {
+        req.body.author = req.user._id;
         dish.comments.push(req.body);
 
         let dishSave = await dish.save();
-        res.statusCode = 201;
-        res.setHeader('Content-Type', 'application/json');
-        res.json(dishSave);
+
+        if (dishSave != null) {
+
+          let dish = await Dishes.findById(dishSave._id).populate('comments.author');
+
+          res.statusCode = 201;
+          res.setHeader('Content-Type', 'application/json');
+          res.json(dish);
+
+        }
+
       } else {
         error = new Error('Dish ' + req.params.dishId + ' not found');
         error.statusCode = 404;
@@ -175,7 +184,7 @@ dishRouter
   .route('/:dishId/comments/:commentId')
   .get(async (req, res, next) => {
     try {
-      let dish = await Dishes.findById(req.params.dishId);
+      let dish = await Dishes.findById(req.params.dishId).populate('comments.author');
       if (dish != null && dish.comments.id(req.params.commentId) != null) {
         res.statusCode = 200;
         res.setHeader('Content-Type', 'application/json');
@@ -197,9 +206,9 @@ dishRouter
     res.statusCode = 403;
     res.end(
       'POST operation not supported on /dishes/' +
-        req.params.dishId +
-        '/comments/' +
-        req.params.commentId
+      req.params.dishId +
+      '/comments/' +
+      req.params.commentId
     );
   })
   .put(authenticate.verifyUser, async (req, res, next) => {
@@ -215,9 +224,15 @@ dishRouter
 
         let saveResult = await dish.save();
 
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json(saveResult);
+        if (saveResult != null) {
+
+          let dish = await Dishes.findById(saveResult._id).populate('comments.author');
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json(dish);
+
+        }
+
       } else if (dish == null) {
         error = new Error('Dish ' + req.params.dishId + ' not found');
         error.statusCode = 404;
@@ -239,9 +254,14 @@ dishRouter
         dish.comments.id(req.params.commentId).remove();
 
         let saveResult = await dish.save();
-        res.statusCode = 200;
-        res.setHeader('Content-Type', 'application/json');
-        res.json('Comment deleted succesfully');
+        if (saveResult != null) {
+
+          let dish = await Dishes.findById(saveResult._id).populate('comments.author');
+          res.statusCode = 200;
+          res.setHeader('Content-Type', 'application/json');
+          res.json(dish);
+
+        }
       } else if (dish == null) {
         error = new Error('Dish ' + req.params.dishId + ' not found');
         error.statusCode = 404;
