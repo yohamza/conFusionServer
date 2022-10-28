@@ -8,8 +8,13 @@ const authenticate = require('../authenticate');
 router.use(bodyParser.json());
 
 /* GET users listing. */
-router.get('/', function (req, res, next) {
-  res.send('respond with a resource');
+router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
+  try {
+    let users = await User.find({});
+    res.status(200).json({ users: users });
+  } catch (error) {
+    return next(err);
+  }
 });
 
 router.post('/signup', async (req, res, next) => {

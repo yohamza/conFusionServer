@@ -17,7 +17,7 @@ promoRouter
       next(error);
     }
   })
-  .post(authenticate.verifyUser, async (req, res, next) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
     try {
       let promotion = await Promotions.create(req.body);
       res.statusCode = 201;
@@ -27,11 +27,11 @@ promoRouter
       next(error);
     }
   })
-  .put(authenticate.verifyUser, (req, res, next) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /promotions');
   })
-  .delete(authenticate.verifyUser, async (req, res, next) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
     try {
       let promotions = await Promotions.deleteMany({});
       res.statusCode = 200;
@@ -60,13 +60,13 @@ promoRouter
       next(error);
     }
   })
-  .post(authenticate.verifyUser, (req, res, next) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end(
       'POST operation not supported on /promotions/' + req.params.promoId
     );
   })
-  .put(authenticate.verifyUser, async (req, res, next) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
     try {
       let promotion = await Promotions.findByIdAndUpdate(
         req.params.promoId,
@@ -87,7 +87,7 @@ promoRouter
       next(error);
     }
   })
-  .delete(authenticate.verifyUser, async (req, res, next) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
     try {
       let promotion = await Promotions.findByIdAndDelete(req.params.promoId);
       if (promotion != null) {

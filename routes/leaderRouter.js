@@ -17,7 +17,7 @@ leaderRouter
       next(error);
     }
   })
-  .post(authenticate.verifyUser, async (req, res, next) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
     try {
       let leader = await Leaders.create(req.body);
 
@@ -28,11 +28,11 @@ leaderRouter
       next(error);
     }
   })
-  .put(authenticate.verifyUser, (req, res, next) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('PUT operation not supported on /leaders');
   })
-  .delete(authenticate.verifyUser, async (req, res, next) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
     try {
       let result = await Leaders.deleteMany({});
       res.statusCode = 200;
@@ -62,11 +62,11 @@ leaderRouter
       next(error);
     }
   })
-  .post(authenticate.verifyUser, (req, res, next) => {
+  .post(authenticate.verifyUser, authenticate.verifyAdmin, (req, res, next) => {
     res.statusCode = 403;
     res.end('POST operation not supported on /leaders/' + req.params.leaderId);
   })
-  .put(authenticate.verifyUser, async (req, res, next) => {
+  .put(authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
     try {
       let leader = await Leaders.findByIdAndUpdate(
         req.params.leaderId,
@@ -87,7 +87,7 @@ leaderRouter
       next(error);
     }
   })
-  .delete(authenticate.verifyUser, async (req, res, next) => {
+  .delete(authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
     try {
       let result = Leaders.findByIdAndDelete(req.params.leaderId);
 
