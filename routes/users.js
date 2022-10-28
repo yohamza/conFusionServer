@@ -4,11 +4,12 @@ const router = express.Router();
 const User = require('../models/user');
 const passport = require('passport');
 const authenticate = require('../authenticate');
+const cors = require('./cors');
 
 router.use(bodyParser.json());
 
 /* GET users listing. */
-router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
+router.get('/', cors.corsWithOptions, authenticate.verifyUser, authenticate.verifyAdmin, async (req, res, next) => {
   try {
     let users = await User.find({});
     res.status(200).json({ users: users });
@@ -17,7 +18,7 @@ router.get('/', authenticate.verifyUser, authenticate.verifyAdmin, async (req, r
   }
 });
 
-router.post('/signup', async (req, res, next) => {
+router.post('/signup', cors.corsWithOptions, async (req, res, next) => {
   try {
     console.log(
       'username: ' + req.body.username + '\npassword: ' + req.body.password
@@ -73,14 +74,14 @@ router.post('/signup', async (req, res, next) => {
   }
 });
 
-router.post('/login', passport.authenticate('local'), (req, res) => {
+router.post('/login', cors.corsWithOptions, passport.authenticate('local'), (req, res) => {
   var token = authenticate.generateToken({ _id: req.user._id });
   res.status = 200;
   res.setHeader('Content-Type', 'application/json');
   res.json({ success: true, jwt: token, message: 'Logged In succesfully' });
 });
 
-router.get('/logout', async (req, res, next) => {
+router.get('/logout', cors.corsWithOptions, async (req, res, next) => {
   try {
     let user = await User.findOne({ username: req.body.username });
 
