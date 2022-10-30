@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 require('mongoose-currency').loadType(mongoose);
 const Currency = mongoose.Types.Currency;
+const passportLocalMongoose = require("passport-local-mongoose");
 
 const commenSchema = new Schema(
   {
@@ -25,7 +26,7 @@ const commenSchema = new Schema(
   }
 );
 
-const dishSchema = new Schema(
+const Dish = new Schema(
   {
     name: {
       type: String,
@@ -60,6 +61,8 @@ const dishSchema = new Schema(
   }
 );
 
-var dishModel = mongoose.model('Dish', dishSchema);
+Dish.plugin(passportLocalMongoose);
+
+var dishModel = mongoose.model('Dish', Dish);
 
 module.exports = dishModel;
